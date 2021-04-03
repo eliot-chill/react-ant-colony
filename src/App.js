@@ -1,43 +1,51 @@
 import React from "react";
 import Sketch from "react-p5";
 import "./App.css";
-import { Ant } from "./ant-colony/ant.js";
-import antImg from "./ant-colony/res/ant.png";
+import { Grid } from "@material-ui/core";
+import { AntSketch } from "./ant-colony/antSketch.js";
 
 class testSketch {
-  x = 50;
-  y = 50;
-  c = 32;
-  ant;
-  img;
+  sketch = new AntSketch(1280, 640, 1280, 640);
 
   setup = (p5, parent) => {
-    p5.createCanvas(500, 500).parent(parent);
-    this.ant = new Ant(this.x, this.y, p5);
+    // Set up AntSketch
+    this.sketch.setP5(p5, parent);
+    this.sketch.setup();
   };
 
   preload = (p5) => {
-    p5.loadImage(antImg, (img) => {
-      this.img = img;
-    });
+    // Preload AntSketch
   };
 
   draw = (p5) => {
-    p5.background(255);
-    this.ant.draw(this.img);
-    this.ant.update(this.x, this.y);
-    if (this.x++ >= 500 + this.c / 2) this.x = -this.c / 2;
+    // Draw AntSketch
+    this.sketch.draw();
+  };
+
+  mouseClicked = (p5, event) => {
+    var offset = this.sketch.getFoodSize();
+    //this.sketch.addAnt(event.offsetX - offset, event.offsetY - offset);
+    var x = event.offsetX - offset;
+    var y = event.offsetY - offset;
+
+    this.sketch.addFood(x, y);
+    return false;
   };
 }
 
 function App() {
   var mySketch = new testSketch();
   return (
-    <Sketch
-      setup={mySketch.setup}
-      draw={mySketch.draw}
-      preload={mySketch.preload}
-    />
+    <Grid container justify="center" alignItems="center">
+      <Grid item>
+        <Sketch
+          preload={mySketch.preload}
+          setup={mySketch.setup}
+          draw={mySketch.draw}
+          mouseClicked={mySketch.mouseClicked}
+        />
+      </Grid>
+    </Grid>
   );
 }
 
